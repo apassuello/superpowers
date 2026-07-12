@@ -7,7 +7,7 @@ description: Use when you have a spec or requirements for a multi-step task, bef
 
 ## Overview
 
-Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, code, testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. TDD. Frequent commits.
+Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, the contract (signatures + behavioral criteria), testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. TDD. Frequent commits.
 
 Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they don't know good test design very well.
 
@@ -76,6 +76,27 @@ include this section.]
 ---
 ```
 
+## Artifact Content Rule
+
+A plan — and the task briefs derived from it — states **what the code must satisfy**, not the pre-written solution. The implementer (a fresh subagent, or an inline TDD cycle) writes the implementation.
+
+**Belongs in a task (the contract):**
+- Exact file paths (create / modify / test)
+- Function/class/type **signatures & API surface** — pin these; independent implementers drift on names and interfaces otherwise
+- Naming conventions and code-style directives
+- Data schemas / formats / wire contracts
+- **Behavioral acceptance criteria** — what it must do, edge cases, error behavior
+- The **acceptance test** (the executable RED spec — see Task Structure)
+- Exact commands with expected output; commit commands
+- Verbatim configuration / CI / schema files
+
+**Never in a task:**
+- The pre-written **implementation of the task's core logic** — function bodies, algorithms. That is precisely what the implementer is dispatched to produce.
+
+**Narrow exception:** a genuinely tricky algorithm may appear as a *clearly-labeled reference hint*, never as "the step." Rule of thumb: no pre-written implementation of the task's core logic.
+
+Forbidding the solution does NOT lower the specificity bar (see No Placeholders): "show how" is satisfied by contract + acceptance test, not by a pre-written body.
+
 ## Task Structure
 
 ````markdown
@@ -92,36 +113,47 @@ include this section.]
   and return types. A task's implementer sees only their own task; this
   block is how they learn the names and types neighboring tasks use.]
 
-- [ ] **Step 1: Write the failing test**
+- [ ] **Step 1: Write the failing test** — this is the acceptance test / RED spec; it STAYS in the plan.
 
 ```python
-def test_specific_behavior():
-    result = function(input)
-    assert result == expected
+def test_slugify_lowercases_and_hyphenates():
+    assert slugify("Hello World") == "hello-world"
+
+def test_slugify_collapses_punctuation_and_strips_edges():
+    assert slugify("  A, B & C!  ") == "a-b-c"
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `pytest tests/path/test.py::test_name -v`
-Expected: FAIL with "function not defined"
+Run: `pytest tests/path/test_slugify.py -v`
+Expected: FAIL with `NameError: name 'slugify' is not defined`
 
-- [ ] **Step 3: Write minimal implementation**
+- [ ] **Step 3: Implement to pass the test**
+
+The implementer writes the body to satisfy the test above and the contract below. Do NOT pre-write the implementation here.
+
+**Contract — signature the implementation must expose:**
 
 ```python
-def function(input):
-    return expected
+def slugify(text: str) -> str: ...
 ```
+
+**Behavioral criteria:**
+- Lowercases all ASCII letters.
+- Replaces each run of non-alphanumeric characters with a single `-`.
+- Strips leading and trailing `-`.
+- Edge case: empty or all-punctuation input returns `""`.
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `pytest tests/path/test.py::test_name -v`
-Expected: PASS
+Run: `pytest tests/path/test_slugify.py -v`
+Expected: PASS (2 passed)
 
 - [ ] **Step 5: Commit**
 
 ```bash
-git add tests/path/test.py src/path/file.py
-git commit -m "feat: add specific feature"
+git add tests/path/test_slugify.py src/path/slugify.py
+git commit -m "feat: add slugify helper"
 ```
 ````
 
@@ -132,12 +164,12 @@ Every step must contain the actual content an engineer needs. These are **plan f
 - "Add appropriate error handling" / "add validation" / "handle edge cases"
 - "Write tests for the above" (without actual test code)
 - "Similar to Task N" (repeat the code — the engineer may be reading tasks out of order)
-- Steps that describe what to do without showing how (code blocks required for code steps)
+- Steps that describe what to do without showing how — "showing how" means the contract (exact signatures/API) plus the acceptance test, NOT vague prose and NOT a pre-written implementation body (see Artifact Content Rule)
 - References to types, functions, or methods not defined in any task
 
 ## Remember
 - Exact file paths always
-- Complete code in every step — if a step changes code, show the code
+- Show the acceptance test and the contract (signatures + behavioral criteria); the implementer writes the body — never pre-write the implementation of a task's core logic
 - Exact commands with expected output
 - DRY, YAGNI, TDD, frequent commits
 
@@ -152,6 +184,12 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 **3. Type consistency:** Do the types, method signatures, and property names you used in later tasks match what you defined in earlier tasks? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.
 
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
+
+## Spec Amendment
+
+While writing the plan you may surface gaps, new needs, or additions the spec missed — a missing requirement, an interface the spec never pinned, an edge case with no home. When you do, you MAY complete or correct the spec to close them: amend the spec, commit the change, and note what changed and why. Then plan against the corrected spec.
+
+Spec *authorship* still belongs to the brainstorming phase — this is a planning-phase feedback loop, not a transfer of ownership. Amend to fix what planning revealed; don't redesign the spec.
 
 ## Execution Handoff
 
