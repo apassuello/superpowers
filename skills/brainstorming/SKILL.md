@@ -83,7 +83,8 @@ digraph brainstorming {
 - Once you believe you understand what you're building, present the design
 - Scale each section to its complexity: a few sentences if straightforward, up to 200-300 words if nuanced
 - Ask after each section whether it looks right so far
-- Cover: architecture, components, data flow, error handling, testing
+- Cover: architecture, components, data flow, error handling, testing — at the level of contracts, behavior, and signatures, not pre-written implementations
+- Signatures and API surface are welcome (they pin cross-codebase homogeneity so separately-built units stay consistent); implementation bodies are the build phase's job. This is the same Artifact Content Rule that writing-plans applies to plans.
 - Be ready to go back and clarify if something doesn't make sense
 
 **Design for isolation and clarity:**
