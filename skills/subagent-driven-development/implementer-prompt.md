@@ -31,9 +31,17 @@ Subagent (general-purpose):
 
     ## Your Job
 
+    Your task brief gives you the **contract** (signatures + behavioral
+    criteria) and an **acceptance test** — not a pre-written solution. You
+    write the implementation that satisfies them; you are not transcribing
+    code someone already wrote.
+
     Once you're clear on requirements:
-    1. Implement exactly what the task specifies
-    2. Write tests (following TDD if task says to)
+    1. Implement exactly what the task specifies — write the implementation
+       yourself to satisfy the contract; do not expect a pre-written body to copy
+    2. Satisfy the plan's acceptance test, then add further tests as needed
+       (TDD: the plan's acceptance test is your RED — make it GREEN, then
+       extend coverage)
     3. Verify implementation works
     4. Commit your work
     5. Self-review (see below)
