@@ -29,6 +29,8 @@ For each task:
 3. Run verifications as specified
 4. Mark as completed
 
+**The plan is a contract to implement, not code to transcribe.** Each task hands you the acceptance test and the contract (signatures + behavioral criteria); you write the implementation that satisfies them.
+
 ### Step 3: Complete Development
 
 After all tasks complete and verified:
