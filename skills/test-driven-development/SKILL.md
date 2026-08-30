@@ -354,12 +354,28 @@ Bug found? Write failing test reproducing it. Follow TDD cycle. Test proves fix 
 
 Never fix bugs without a test.
 
-## Testing Anti-Patterns
+## Test Design References
 
-When adding mocks or test utilities, read [testing-anti-patterns.md](testing-anti-patterns.md) to avoid common pitfalls:
-- Testing mock behavior instead of real behavior
-- Adding test-only methods to production classes
-- Mocking without understanding dependencies
+**Designing a test — always read this first.** When you are writing or
+changing any test, read [writing-good-tests.md](writing-good-tests.md) for
+the rules that keep tests honest:
+- Name the production change that would make the test fail — before writing it
+- Derive expectations independently: literals and hand-checked fixtures, table-driven with literal `want` values
+- No change detectors; assert behavior, not text or constants
+- Assert on real behavior, never on mock behavior
+
+This matters most when you are implementing from a plan. Plans state
+contracts — signatures, criteria, and a table of normative cases — and
+**you** design the tests that cover them
+(superpowers:writing-plans, Artifact Content Rule). The plan's normative
+cases are your floor, not your ceiling: cover every row, then add the edge
+cases the criteria imply that the table never named.
+
+**Going deeper on mocks and test utilities:** read
+[testing-anti-patterns.md](testing-anti-patterns.md) for the long-form
+treatment — testing mock behavior instead of real behavior, test-only
+methods in production classes, mocking without understanding dependencies,
+incomplete mocks, and when a mock has grown too complex to keep.
 
 ## Final Rule
 
