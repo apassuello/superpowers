@@ -119,13 +119,13 @@ most expensive — which silently defeats this section.
 **Turn count beats token price.** Wall-clock and context cost scale with how
 many turns a subagent takes, and the cheapest models routinely take 2-3× the
 turns on multi-step work — costing more overall. Use a mid-tier model as the
-floor for reviewers and for implementers working from prose descriptions.
-When the task's plan text contains the complete code to write, the
-implementation is transcription plus testing: use the cheapest tier for
-that implementer. Single-file mechanical fixes also take the cheapest tier.
+floor for reviewers and for implementers. Plans state contracts, not
+solutions (superpowers:writing-plans, Artifact Content Rule), so every
+implementer designs its own tests and writes its own body — there is no
+transcription tier. Single-file mechanical fixes still take the cheapest tier.
 
 **Task complexity signals (implementation tasks):**
-- Touches 1-2 files with a complete spec → cheap model
+- Touches 1-2 files with a tightly-pinned contract → cheap model
 - Touches multiple files with integration concerns → standard model
 - Requires design judgment or broad codebase understanding → most capable model
 
@@ -155,6 +155,31 @@ review, but you must resolve each one yourself before marking the task
 complete: you hold the plan and cross-task context the reviewer
 lacks. If you confirm an item is a real gap, treat it as a failed spec
 review — send it back to the implementer and re-review.
+
+## Spec Drift
+
+The spec is the baseline the plan was derived from, and it stays true for
+whoever reads it next. Implementation will sometimes prove it wrong — an
+interface that cannot work as specified, an edge case with no defined
+answer, a behavior the spec pinned before anyone had tried it.
+
+When an implementer or reviewer surfaces a change to **what the software
+does** — not how it is built — that is a spec change, and it is not yours
+to absorb:
+
+1. Stop before the change lands. Do not let it ship inside a task diff and
+   get discovered later by whoever trusts the spec.
+2. Write down the proposed change, the spec text it contradicts, and why
+   implementation forced it.
+3. Get it reviewed — your human partner, or a fresh agent holding the spec
+   and the proposal. The implementer that hit the problem does not ratify
+   its own workaround.
+4. Once ratified, amend the spec, amend every task the change touches, and
+   commit those together. A ruling applied to one task and not its
+   neighbours is worse than no ruling — the tasks now disagree.
+
+Changes to *how* a task is built — structure, naming, decomposition inside
+the contract — are the implementer's call and need none of this.
 
 ## Constructing Reviewer Prompts
 
@@ -379,8 +404,11 @@ Done!
 - Skip review loops (reviewer found issues = implementer fixes = review again)
 - Let implementer self-review replace actual review (both are needed)
 - Tell a reviewer what not to flag, or pre-rate a finding's severity in the
-  dispatch prompt ("treat it as Minor at most") — the plan's example code is
-  a starting point, not evidence that its weaknesses were chosen
+  dispatch prompt ("treat it as Minor at most") — the plan states a contract,
+  not a solution, so a weakness in the implementation is the implementer's,
+  never something the plan already chose
+- Let a behavior change land inside a task without going back to the spec
+  (see Spec Drift)
 - Dispatch a task reviewer without a diff file — generate it first
   (`scripts/review-package BASE HEAD`) and name the printed path in the
   prompt

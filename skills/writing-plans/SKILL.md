@@ -7,7 +7,7 @@ description: Use when you have a spec or requirements for a multi-step task, bef
 
 ## Overview
 
-Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, the contract (signatures + behavioral criteria), testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. TDD. Frequent commits.
+Write comprehensive implementation plans assuming the engineer has zero context for our codebase and questionable taste. Document everything they need to know: which files to touch for each task, the contract (signatures + behavioral criteria + normative cases), testing, docs they might need to check, how to test it. Give them the whole plan as bite-sized tasks. DRY. YAGNI. TDD. Frequent commits.
 
 Assume they are a skilled developer, but know almost nothing about our toolset or problem domain. Assume they don't know good test design very well.
 
@@ -17,6 +17,38 @@ Assume they are a skilled developer, but know almost nothing about our toolset o
 
 **Save plans to:** `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`
 - (User preferences for plan location override this default)
+
+## Spec Baseline
+
+**A plan is derived from a spec, never written in place of one.** The spec
+owns the behavior; the plan owns the sequencing and the contracts that make
+independent implementers converge. Before writing any task:
+
+**1. Locate the spec.** Look in `docs/superpowers/specs/` (or wherever this
+project keeps design docs) for the design document this plan implements.
+Record its path in the plan header's **Spec:** field.
+
+**2. If there is no spec, stop and get one.** Do not plan against an
+unwritten design — you will invent behavior at plan time, in prose nobody
+ratified, and every downstream implementer will treat your invention as
+requirements. Say so plainly and invoke `superpowers:brainstorming` to
+produce the spec first. A one-task change to already-specified behavior is
+the only exception, and even then name the spec section it changes.
+
+**3. Check the spec is not stale.** Skim the documents the spec depends on
+— the ones it cites, and the README / architecture docs describing the
+components it touches. If any contradicts the current code or the spec,
+report the contradictions to your human partner before planning. Planning
+on top of a stale document propagates the staleness into every task.
+
+**4. Behavior is traceable, not invented.** Every behavioral criterion and
+normative case in a task comes from the spec. If you cannot point to where
+the spec says it, you are authoring the spec — see **Spec Amendment**:
+amend, commit, and get it reviewed, rather than burying a new requirement
+inside a task.
+
+The plan and the spec must agree at all times. If they diverge, the spec
+governs and one of the two is wrong.
 
 ## Scope Check
 
@@ -66,6 +98,9 @@ independently testable deliverable.
 
 **Tech Stack:** [Key technologies/libraries]
 
+**Spec:** [path to the spec/design doc this plan implements — the plan
+argues from the spec, so the spec travels with it; executors read both]
+
 ## Global Constraints
 
 [The spec's project-wide requirements — version floors, dependency limits,
@@ -78,24 +113,38 @@ include this section.]
 
 ## Artifact Content Rule
 
-A plan — and the task briefs derived from it — states **what the code must satisfy**, not the pre-written solution. The implementer (a fresh subagent, or an inline TDD cycle) writes the implementation.
+A plan — and the task briefs derived from it — states **what the code must satisfy**, not the pre-written solution. The implementer (a fresh subagent, or an inline TDD cycle) writes both the implementation and the tests.
+
+**Contracts stay, implementations go.** A runnable test file is an
+implementation too — of verification. Cross-task coherence comes from
+pinned signatures, schemas, wire formats, and exact normative values, not
+from shipping the test bodies.
 
 **Belongs in a task (the contract):**
 - Exact file paths (create / modify / test)
 - Function/class/type **signatures & API surface** — pin these; independent implementers drift on names and interfaces otherwise
 - Naming conventions and code-style directives
-- Data schemas / formats / wire contracts
+- Data schemas / formats / wire contracts — serialization key order, sort keys, the exact envelope shape
+- Command / API surface grammar
 - **Behavioral acceptance criteria** — what it must do, edge cases, error behavior
-- The **acceptance test** (the executable RED spec — see Task Structure)
-- Exact commands with expected output; commit commands
+- **Normative cases** — a compact table of exact input → output/error values the implementation must produce, traceable to the spec (see Task Structure)
+- Exact commands; commit commands
 - Verbatim configuration / CI / schema files
 
 **Never in a task:**
 - The pre-written **implementation of the task's core logic** — function bodies, algorithms. That is precisely what the implementer is dispatched to produce.
+- **Runnable test files** — imports, fixtures, `setUp`/teardown, test classes, test-function definitions, `# tests/test_x.py` headers. Test *design* is the implementer's job, done against the code in front of them; a transcribed test was designed once, in the abstract, and never re-derived. Plan-time test code is also unexecutable and therefore unverified — its bugs surface as an implementer unsure whether to fix the plan's test or their own code.
+- **Expected test counts and test-runner error strings** — `PASS (5 tests OK)`, `FAIL with ImportError`. These bake in test-splitting decisions that belong to the implementer, and go stale the moment they split a case in two.
 
 **Narrow exception:** a genuinely tricky algorithm may appear as a *clearly-labeled reference hint*, never as "the step." Rule of thumb: no pre-written implementation of the task's core logic.
 
-Forbidding the solution does NOT lower the specificity bar (see No Placeholders): "show how" is satisfied by contract + acceptance test, not by a pre-written body.
+Forbidding the solution does NOT lower the specificity bar (see No Placeholders): "show how" is satisfied by the contract — signatures, schemas, criteria, and exact normative values — not by a pre-written body and not by vague prose. The red flag is **criteria two implementers could not converge on**, never *absent code*.
+
+**The revision test.** A ratified change to the command surface or the wire
+format should be absorbable by editing prose and table values. If it forces
+you to hand-edit assertion arguments inside embedded test bodies across
+several tasks — each edit unverifiable until some implementer runs it —
+the plan is carrying code it should not have.
 
 ## Task Structure
 
@@ -113,25 +162,6 @@ Forbidding the solution does NOT lower the specificity bar (see No Placeholders)
   and return types. A task's implementer sees only their own task; this
   block is how they learn the names and types neighboring tasks use.]
 
-- [ ] **Step 1: Write the failing test** — this is the acceptance test / RED spec; it STAYS in the plan.
-
-```python
-def test_slugify_lowercases_and_hyphenates():
-    assert slugify("Hello World") == "hello-world"
-
-def test_slugify_collapses_punctuation_and_strips_edges():
-    assert slugify("  A, B & C!  ") == "a-b-c"
-```
-
-- [ ] **Step 2: Run test to verify it fails**
-
-Run: `pytest tests/path/test_slugify.py -v`
-Expected: FAIL with `NameError: name 'slugify' is not defined`
-
-- [ ] **Step 3: Implement to pass the test**
-
-The implementer writes the body to satisfy the test above and the contract below. Do NOT pre-write the implementation here.
-
 **Contract — signature the implementation must expose:**
 
 ```python
@@ -142,12 +172,39 @@ def slugify(text: str) -> str: ...
 - Lowercases all ASCII letters.
 - Replaces each run of non-alphanumeric characters with a single `-`.
 - Strips leading and trailing `-`.
-- Edge case: empty or all-punctuation input returns `""`.
+- Empty or all-punctuation input returns `""`.
+
+**Normative cases** — the implementer's tests must cover every row; exact values:
+
+| input | output |
+|---|---|
+| `"Hello World"` | `"hello-world"` |
+| `"  A, B & C!  "` | `"a-b-c"` |
+| `"!!!"` | `""` |
+| `""` | `""` |
+
+- [ ] **Step 1: Write the failing test**
+
+Design the test yourself from the contract above. Cover every normative
+case, plus any edge case the contract implies that the table does not
+name. Do NOT expect pre-written test code here — see
+`superpowers:test-driven-development` and its `writing-good-tests.md`.
+
+- [ ] **Step 2: Run test to verify it fails**
+
+Run: `pytest tests/path/test_slugify.py -v`
+Expected: FAIL — `slugify` does not exist yet. Confirm the failure is the
+*absence of the implementation*, not a broken test.
+
+- [ ] **Step 3: Implement to pass the test**
+
+Write the body to satisfy the contract and the tests you wrote in Step 1.
 
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `pytest tests/path/test_slugify.py -v`
-Expected: PASS (2 passed)
+Expected: PASS, output pristine. (No test count — how many tests cover
+these cases is your call.)
 
 - [ ] **Step 5: Commit**
 
@@ -162,34 +219,51 @@ git commit -m "feat: add slugify helper"
 Every step must contain the actual content an engineer needs. These are **plan failures** — never write them:
 - "TBD", "TODO", "implement later", "fill in details"
 - "Add appropriate error handling" / "add validation" / "handle edge cases"
-- "Write tests for the above" (without actual test code)
-- "Similar to Task N" (repeat the code — the engineer may be reading tasks out of order)
-- Steps that describe what to do without showing how — "showing how" means the contract (exact signatures/API) plus the acceptance test, NOT vague prose and NOT a pre-written implementation body (see Artifact Content Rule)
+- "Write tests for the above" / "test the happy path and errors" (without naming the normative cases and their exact values)
+- "Similar to Task N" (repeat the contract — the engineer may be reading tasks out of order)
+- Steps that describe what to do without showing how — "showing how" means the contract (exact signatures/API, schemas, and normative case values), NOT vague prose, NOT a pre-written implementation body, and NOT a transcribed test file (see Artifact Content Rule)
+- Behavioral criteria so loose that two competent implementers would build measurably different things — this, not absent code, is the specificity failure to hunt for
 - References to types, functions, or methods not defined in any task
+- Behavior that appears in no spec section (see Spec Baseline — amend the spec instead of smuggling it into a task)
 
 ## Remember
 - Exact file paths always
-- Show the acceptance test and the contract (signatures + behavioral criteria); the implementer writes the body — never pre-write the implementation of a task's core logic
-- Exact commands with expected output
+- Every task traces to the spec; the plan and the spec agree or one is wrong
+- Show the contract — signatures, schemas, behavioral criteria, normative cases with exact values. The implementer writes the tests AND the body; never pre-write either
+- Exact commands; expected output without test counts or runner error strings
 - DRY, YAGNI, TDD, frequent commits
 
 ## Self-Review
 
 After writing the complete plan, look at the spec with fresh eyes and check the plan against it. This is a checklist you run yourself — not a subagent dispatch.
 
-**1. Spec coverage:** Skim each section/requirement in the spec. Can you point to a task that implements it? List any gaps.
+**1. Spec coverage, both directions:** Skim each section/requirement in the spec — can you point to a task that implements it? Then read your tasks — can you point to the spec section each behavioral criterion and normative case came from? Unsourced behavior means you authored spec inside the plan; take it through **Spec Amendment** instead.
 
 **2. Placeholder scan:** Search your plan for red flags — any of the patterns from the "No Placeholders" section above. Fix them.
 
-**3. Type consistency:** Do the types, method signatures, and property names you used in later tasks match what you defined in earlier tasks? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.
+**3. Artifact content scan:** Search the plan for code fences. Every one must be a signature, a schema, a config/CI file, a command, or a clearly-labeled reference hint. If a fence contains imports, fixtures, test-function definitions, or a function body implementing the task's core logic, delete it and replace it with the contract it was standing in for. Then search for expected test counts (`2 passed`, `5 tests OK`) and runner error strings (`ImportError`, `NameError`) and strike those too.
+
+**4. Type consistency:** Do the types, method signatures, and property names you used in later tasks match what you defined in earlier tasks? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.
+
+**5. Convergence check:** Pick the two vaguest behavioral criteria in the plan. Could two competent implementers, working from the criteria and normative cases alone, build measurably different things? If yes, add the missing exact values — not test code.
 
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
 
 ## Spec Amendment
 
-While writing the plan you may surface gaps, new needs, or additions the spec missed — a missing requirement, an interface the spec never pinned, an edge case with no home. When you do, you MAY complete or correct the spec to close them: amend the spec, commit the change, and note what changed and why. Then plan against the corrected spec.
+While writing the plan you may surface gaps, new needs, or additions the spec missed — a missing requirement, an interface the spec never pinned, an edge case with no home. When you do, you MAY complete or correct the spec to close them: amend the spec, commit the change as its own commit, and note what changed and why. Then plan against the corrected spec.
+
+**Amendments get reviewed — they are new design, not bookkeeping.** Before
+planning against an amended spec, put the amendment in front of a reviewer:
+your human partner, or a fresh agent with the spec and the amendment diff.
+An amendment that slips through unreviewed is a requirement nobody ratified,
+and it will be implemented as though it had been.
 
 Spec *authorship* still belongs to the brainstorming phase — this is a planning-phase feedback loop, not a transfer of ownership. Amend to fix what planning revealed; don't redesign the spec.
+
+The same rule applies later: when *implementation* forces a behavior change,
+it goes back to the spec and the plan under review — never absorbed silently
+into a task. See `superpowers:subagent-driven-development`.
 
 ## Execution Handoff
 

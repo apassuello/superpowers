@@ -29,7 +29,9 @@ For each task:
 3. Run verifications as specified
 4. Mark as completed
 
-**The plan is a contract to implement, not code to transcribe.** Each task hands you the acceptance test and the contract (signatures + behavioral criteria); you write the implementation that satisfies them.
+**The plan is a contract to implement, not code to transcribe.** Each task hands you the contract — signatures, schemas, behavioral criteria, and a table of normative cases with exact values. You write the tests AND the implementation that satisfy it. Design the tests yourself against the real code, covering every normative case; the plan does not carry test bodies for you to copy.
+
+**Behavior changes go back to the spec, under review.** If implementation forces a change to what the software does — not how it is built — stop. Take it to the spec and the plan, get it reviewed by your human partner or a fresh agent, and only then implement. A behavior change absorbed silently into a task is a requirement nobody ratified, and the spec is now wrong for everyone who reads it next.
 
 ### Step 3: Complete Development
 

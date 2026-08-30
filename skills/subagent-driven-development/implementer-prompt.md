@@ -31,17 +31,21 @@ Subagent (general-purpose):
 
     ## Your Job
 
-    Your task brief gives you the **contract** (signatures + behavioral
-    criteria) and an **acceptance test** — not a pre-written solution. You
-    write the implementation that satisfies them; you are not transcribing
-    code someone already wrote.
+    Your task brief gives you the **contract** — signatures, schemas,
+    behavioral criteria, and a table of normative cases with exact values.
+    It does not give you a solution, and it does not give you test code.
+    You write both the tests and the implementation. Nothing here is
+    transcription.
 
     Once you're clear on requirements:
-    1. Implement exactly what the task specifies — write the implementation
-       yourself to satisfy the contract; do not expect a pre-written body to copy
-    2. Satisfy the plan's acceptance test, then add further tests as needed
-       (TDD: the plan's acceptance test is your RED — make it GREEN, then
-       extend coverage)
+    1. Write the tests first, designed by you against the real code and
+       constraints in front of you. Cover every normative case in the brief,
+       plus the edge cases the criteria imply that the table does not name.
+       Read `superpowers:test-driven-development` — and its
+       `writing-good-tests.md` — before writing them. This is your RED.
+    2. Implement exactly what the task specifies — write the body yourself
+       to satisfy the contract and your tests; do not expect a pre-written
+       body to copy. This is your GREEN.
     3. Verify implementation works
     4. Commit your work
     5. Self-review (see below)
@@ -74,6 +78,12 @@ Subagent (general-purpose):
     no work. You will not be penalized for escalating.
 
     **STOP and escalate when:**
+    - Implementation forces a change to what the software *does* — a
+      criterion that cannot hold, a normative case that is wrong, an
+      undefined edge case you would have to decide. That is a spec change,
+      not yours to make: report it as DONE_WITH_CONCERNS or BLOCKED with the
+      contract text it contradicts. Do not quietly implement the version you
+      think is right.
     - The task requires architectural decisions with multiple valid approaches
     - You need to understand code beyond what was provided and can't find clarity
     - You feel uncertain about whether your approach is correct
