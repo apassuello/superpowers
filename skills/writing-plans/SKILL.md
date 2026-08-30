@@ -47,6 +47,16 @@ the spec says it, you are authoring the spec — see **Spec Amendment**:
 amend, commit, and get it reviewed, rather than burying a new requirement
 inside a task.
 
+Two things count as traceable: a value the spec **states**, and a value
+that follows from spec statements by arithmetic or direct composition —
+the spec caps a field at 40 characters and defines the ellipsis, so the
+39-character cut point is derived, not invented. Anything requiring a
+*choice* between defensible answers is not a derivation, however obvious
+it feels: tie-breaks, precedence between two rules, what happens at a
+boundary the spec never mentions. Those go through Spec Amendment. When
+unsure which side a value falls on, ask whether a second planner working
+from the same spec would necessarily land on the same value.
+
 The plan and the spec must agree at all times. If they diverge, the spec
 governs and one of the two is wrong.
 
@@ -182,6 +192,10 @@ def slugify(text: str) -> str: ...
 | `"  A, B & C!  "` | `"a-b-c"` |
 | `"!!!"` | `""` |
 | `""` | `""` |
+| `None` | raises `TypeError("text must be str")` |
+
+(Pin errors the same way you pin outputs — exact exception type and exact
+message. "Handles bad input appropriately" is not a normative case.)
 
 - [ ] **Step 1: Write the failing test**
 
@@ -241,11 +255,11 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 
 **2. Placeholder scan:** Search your plan for red flags — any of the patterns from the "No Placeholders" section above. Fix them.
 
-**3. Artifact content scan:** Search the plan for code fences. Every one must be a signature, a schema, a config/CI file, a command, or a clearly-labeled reference hint. If a fence contains imports, fixtures, test-function definitions, or a function body implementing the task's core logic, delete it and replace it with the contract it was standing in for. Then search for expected test counts (`2 passed`, `5 tests OK`) and runner error strings (`ImportError`, `NameError`) and strike those too.
+**3. Artifact content scan:** Find every block of code in the plan — fenced, indented, or written out as numbered pseudo-test lines in prose. Fences are the common case, not the only one; a rule that only checks fences is one indent away from being bypassed. Every block must be a signature, a schema, a config/CI file, a command, or a clearly-labeled reference hint. If a block contains imports, fixtures, test-function definitions, or a function body implementing the task's core logic, delete it and replace it with the contract it was standing in for. Then search for expected test counts (`2 passed`, `5 tests OK`) and runner error strings (`ImportError`, `NameError`) and strike those too.
 
 **4. Type consistency:** Do the types, method signatures, and property names you used in later tasks match what you defined in earlier tasks? A function called `clearLayers()` in Task 3 but `clearFullLayers()` in Task 7 is a bug.
 
-**5. Convergence check:** Pick the two vaguest behavioral criteria in the plan. Could two competent implementers, working from the criteria and normative cases alone, build measurably different things? If yes, add the missing exact values — not test code.
+**5. Convergence check:** Go task by task — not a fixed sample, which leaves the vague criteria in task 9 undetected. For each task's vaguest criterion, ask: could two competent implementers, working from the criteria and normative cases alone, build measurably different things? If yes, add the missing exact values — not test code.
 
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
 

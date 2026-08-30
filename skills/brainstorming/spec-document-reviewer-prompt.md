@@ -21,8 +21,16 @@ Subagent (general-purpose):
     | Completeness | TODOs, placeholders, "TBD", incomplete sections |
     | Consistency | Internal contradictions, conflicting requirements |
     | Clarity | Requirements ambiguous enough to cause someone to build the wrong thing |
+    | Exact Values | Where behavior has a definite answer, does the spec state it — literal inputs and outputs, error messages, wire formats, key order, sort keys, boundary results? |
     | Scope | Focused enough for a single plan — not covering multiple independent subsystems |
     | YAGNI | Unrequested features, over-engineering |
+
+    **Why Exact Values matters:** `superpowers:writing-plans` requires every
+    normative case in a task to trace back to a spec section. Behavior this
+    spec leaves loose gets invented at plan time by whoever writes the plan,
+    or bounces back through Spec Amendment. Prose describing behavior without
+    pinning its values is the gap to flag — not missing test code, which
+    belongs to the build phase.
 
     ## Calibration
 

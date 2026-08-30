@@ -30,9 +30,10 @@ Subagent (general-purpose):
     ## Artifact Content
 
     A plan states what the code must satisfy; the implementer writes both
-    the tests and the implementation. Read every code fence in the plan.
-    Each one must be a signature, a schema/wire format, a config or CI
-    file, a command, or a clearly-labeled reference hint.
+    the tests and the implementation. Read every block of code in the plan
+    — fenced, indented, or spelled out as pseudo-test lines in prose. Each
+    one must be a signature, a schema/wire format, a config or CI file, a
+    command, or a clearly-labeled reference hint.
 
     **Flag as an issue:**
     - Runnable test code — imports, fixtures, `setUp`, test classes, test-function definitions, `# tests/test_x.py` headers. Test design belongs to the implementer, done against the real code; plan-time test code has never been executed and its bugs land as an implementer unsure whether to fix the plan or their own work.

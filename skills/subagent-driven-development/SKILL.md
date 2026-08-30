@@ -100,7 +100,7 @@ conflicts that only emerge from implementation.
 
 Use the least powerful model that can handle each role to conserve cost and increase speed.
 
-**Mechanical implementation tasks** (isolated functions, clear specs, 1-2 files): use a fast, cheap model. Most implementation tasks are mechanical when the plan is well-specified.
+**Mechanical implementation tasks** (isolated functions, 1-2 files, nothing to design): use a fast, cheap model. Note that a well-specified plan does *not* make a task mechanical — a pinned contract still leaves the implementer to design tests that honestly cover it. Mechanical means there is no judgment left, not that the requirements are clear.
 
 **Integration and judgment tasks** (multi-file coordination, pattern matching, debugging): use a standard model.
 
@@ -125,7 +125,10 @@ implementer designs its own tests and writes its own body — there is no
 transcription tier. Single-file mechanical fixes still take the cheapest tier.
 
 **Task complexity signals (implementation tasks):**
-- Touches 1-2 files with a tightly-pinned contract → cheap model
+- Single-file mechanical fix, no test design → cheapest model
+- Touches 1-2 files with a tightly-pinned contract → mid-tier model (the
+  contract is pinned, but designing tests that honestly cover it is not
+  mechanical — nearly every well-formed task is now in this row)
 - Touches multiple files with integration concerns → standard model
 - Requires design judgment or broad codebase understanding → most capable model
 
@@ -135,7 +138,7 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 
 **DONE:** Generate the review package (`scripts/review-package BASE HEAD`, from this skill's directory — it prints the unique file path it wrote; BASE is the commit you recorded before dispatching the implementer — never `HEAD~1`, which silently drops all but the last commit of a multi-commit task), then dispatch the task reviewer with the printed path.
 
-**DONE_WITH_CONCERNS:** The implementer completed the work but flagged doubts. Read the concerns before proceeding. If the concerns are about correctness or scope, address them before review. If they're observations (e.g., "this file is getting large"), note them and proceed to review.
+**DONE_WITH_CONCERNS:** The implementer completed the work but flagged doubts. Read the concerns before proceeding. If a concern is that the contract itself is wrong — a normative case that cannot be right, a criterion that contradicts another — that is **Spec Drift**, not a code fix: route it through that section before review, and do not let the implementer's workaround stand as the answer. If the concerns are about correctness or scope, address them before review. If they're observations (e.g., "this file is getting large"), note them and proceed to review.
 
 **NEEDS_CONTEXT:** The implementer needs information that wasn't provided. Provide the missing context and re-dispatch.
 
@@ -256,8 +259,8 @@ and is re-read on every later turn. Hand artifacts over as files:
   with the exact values to use verbatim"; (3) interfaces and decisions
   from earlier tasks that the brief cannot know; (4) your resolution of
   any ambiguity you noticed in the brief; (5) the report-file path and
-  report contract. Exact values (numbers, magic strings, signatures, test
-  cases) appear only in the brief.
+  report contract. Exact values (numbers, magic strings, signatures,
+  normative cases) appear only in the brief.
 - **Report file:** name the implementer's report file after the brief
   (brief `…/task-N-brief.md` → report `…/task-N-report.md`) and put it in
   the dispatch prompt. The implementer writes the full report there and

@@ -78,12 +78,19 @@ Subagent (general-purpose):
     no work. You will not be penalized for escalating.
 
     **STOP and escalate when:**
-    - Implementation forces a change to what the software *does* — a
-      criterion that cannot hold, a normative case that is wrong, an
-      undefined edge case you would have to decide. That is a spec change,
-      not yours to make: report it as DONE_WITH_CONCERNS or BLOCKED with the
-      contract text it contradicts. Do not quietly implement the version you
-      think is right.
+    - Implementation forces a change to what the software *does*. That is a
+      spec change, not yours to make — quote the contract text it
+      contradicts and pick the status by whether an as-specified version
+      still exists:
+      - **A normative case looks wrong, but the rest of the contract is
+        buildable** → build everything to the contract exactly as written,
+        then report DONE_WITH_CONCERNS naming that row. Do not "fix" the
+        row by implementing what you think it meant.
+      - **A criterion cannot hold, or an edge case is undefined and you
+        would have to decide it** → report BLOCKED. There is no
+        as-specified version to finish, so DONE_WITH_CONCERNS would mean
+        you already chose one and shipped it. Do not quietly implement the
+        version you think is right.
     - The task requires architectural decisions with multiple valid approaches
     - You need to understand code beyond what was provided and can't find clarity
     - You feel uncertain about whether your approach is correct

@@ -86,6 +86,17 @@ Subagent (general-purpose):
     - **Misunderstood:** right feature built the wrong way, wrong problem
       solved
 
+    **Normative cases are a required checklist, not a suggestion.** The brief
+    does not carry test code — the implementer designed the tests itself, so
+    you are the first check that they actually hit the pinned values. Walk
+    the brief's normative-cases table row by row against the diff's tests:
+    - a row with no covering test is a **Missing** finding
+    - a test asserting a value that differs from its row is a
+      **Misunderstood** finding — the row governs, not the implementation
+    - a row "covered" by a test that cannot fail (asserting on the code's
+      own output, or on a mock) is **Missing**; see the test rules in
+      `superpowers:test-driven-development`
+
     If a requirement cannot be verified from this diff alone (it lives in
     unchanged code or spans tasks), report it as a ⚠️ item instead of
     broadening your search.
