@@ -143,6 +143,12 @@ Implementer subagents report one of four statuses. Handle each appropriately:
 **NEEDS_CONTEXT:** The implementer needs information that wasn't provided. Provide the missing context and re-dispatch.
 
 **BLOCKED:** The implementer cannot complete the task. Assess the blocker:
+0. **First, is it Spec Drift?** BLOCKED is the designated status for a
+   criterion that cannot hold or an undefined edge case — a contradiction
+   in the contract, not a shortfall in the implementer. Route it through
+   **Spec Drift** before anything below. No amount of extra context, and no
+   model upgrade, resolves a contract that contradicts itself; working down
+   this list first burns two re-dispatches to arrive at step 4.
 1. If it's a context problem, provide more context and re-dispatch with the same model
 2. If the task requires more reasoning, re-dispatch with a more capable model
 3. If the task is too large, break it into smaller pieces

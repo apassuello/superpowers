@@ -183,6 +183,7 @@ def slugify(text: str) -> str: ...
 - Replaces each run of non-alphanumeric characters with a single `-`.
 - Strips leading and trailing `-`.
 - Empty or all-punctuation input returns `""`.
+- Non-`str` input raises `TypeError("text must be str")`.
 
 **Normative cases** — the implementer's tests must cover every row; exact values:
 
@@ -193,9 +194,6 @@ def slugify(text: str) -> str: ...
 | `"!!!"` | `""` |
 | `""` | `""` |
 | `None` | raises `TypeError("text must be str")` |
-
-(Pin errors the same way you pin outputs — exact exception type and exact
-message. "Handles bad input appropriately" is not a normative case.)
 
 - [ ] **Step 1: Write the failing test**
 
@@ -227,6 +225,13 @@ git add tests/path/test_slugify.py src/path/slugify.py
 git commit -m "feat: add slugify helper"
 ```
 ````
+
+Pin errors the same way you pin outputs — exact exception type and exact
+message, stated as a behavioral criterion and as a normative-case row.
+"Handles bad input appropriately" is not a normative case. Note that every
+row in the example above answers to a criterion above it: a table row no
+criterion accounts for is unsourced behavior, and the plan is the wrong
+place to introduce it (see Spec Baseline).
 
 ## No Placeholders
 
