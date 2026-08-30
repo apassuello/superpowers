@@ -85,6 +85,7 @@ digraph brainstorming {
 - Ask after each section whether it looks right so far
 - Cover: architecture, components, data flow, error handling, testing — at the level of contracts, behavior, and signatures, not pre-written implementations
 - Signatures and API surface are welcome (they pin cross-codebase homogeneity so separately-built units stay consistent); implementation bodies are the build phase's job. This is the same Artifact Content Rule that writing-plans applies to plans.
+- **Pin behavior to exact values.** Where behavior has a definite answer, the spec states it: literal inputs and outputs, error messages, wire formats, key order, sort keys, boundary results. `superpowers:writing-plans` requires every normative case in a task to trace back to a spec section — behavior the spec leaves loose gets invented at plan time, or bounces back through Spec Amendment. Exact values here, tests in the build phase.
 - Be ready to go back and clarify if something doesn't make sense
 
 **Design for isolation and clarity:**
