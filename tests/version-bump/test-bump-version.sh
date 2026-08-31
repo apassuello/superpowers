@@ -52,11 +52,11 @@ make_fixture "$happy_repo" $'name: superpowers\nversion: 1.2.3'
 [[ "$(yq -r '.version' "$happy_repo/.hermes-plugin/plugin.yaml")" == "2.3.4" ]] \
   || fail "YAML manifest was not bumped"
 
-jq -e '
-  any(.files[];
-    .path == ".hermes-plugin/plugin.yaml" and .field == "version")
-' "$REPO_ROOT/.version-bump.json" >/dev/null \
-  || fail "Hermes manifest is not registered"
+# Upstream asserts here that the repo's own .version-bump.json registers
+# .hermes-plugin/plugin.yaml. This fork does not adopt Hermes support, so that
+# manifest does not and should not exist — see the v6.3.0 adoption notes. The
+# YAML-bumping behaviour the assertion was guarding is already covered above,
+# against the synthetic fixture, which is not coupled to this repo's manifest.
 
 invalid_repo="$TEST_ROOT/invalid"
 make_fixture "$invalid_repo" $'name: superpowers\nversion: 123'
