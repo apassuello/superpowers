@@ -227,8 +227,9 @@ final whole-branch review. When you fill a reviewer template:
   touches, and the global constraints. Nothing else.
 - Dispatch fix subagents for Critical and Important findings. Record Minor
   findings in the progress ledger as you go, and point the final
-  whole-branch review at that list so it can triage which must be fixed
-  before merge. A roll-up nobody reads is a silent discard.
+  whole-branch review at that list, with each cite re-anchored at HEAD by
+  identifier grep — per-task line numbers drift as files grow — so it can
+  triage which must be fixed before merge. A roll-up nobody reads is a silent discard.
 - A finding labeled plan-mandated — or any finding that conflicts with
   what the plan's text requires — is the human's decision, like any plan
   contradiction: present the finding and the plan text, ask which governs.
@@ -256,7 +257,9 @@ Everything you paste into a dispatch prompt — and everything a subagent
 prints back — stays resident in your context for the rest of the session
 and is re-read on every later turn. Hand artifacts over as files:
 
-- **Task brief:** before dispatching an implementer, run this skill's
+- **Task brief:** immediately before dispatching each implementer — never
+  pre-generate briefs; any plan edit after generation leaves a brief
+  stale — run this skill's
   `scripts/task-brief PLAN_FILE N` — it extracts the task's full text to a
   uniquely named file and prints the path. Compose the dispatch so the
   brief stays the single source of requirements. Your dispatch should
