@@ -77,6 +77,7 @@ artifact, never the approval.
 | "The spike works, so I'll keep the code" | A spike's output is an answer. Keeping the code is a new request — classify it. |
 | "It grew, but I'm almost done — no need to re-classify" | Hidden complexity upgrades the path mid-task. Stop and say so. |
 | "They approved the spike, so the follow-up change is approved too" | Each task gets its own classification and its own approval. |
+| "I read the code this touches, so the design is consistent" | You read what you searched for by name. Search by meaning and read the governing spec before claiming consistency. |
 
 ## Checklist
 
@@ -93,16 +94,17 @@ your path and complete them in order.
 **Bounded:**
 1. **Explore project context** — check files, docs, recent commits
 2. **Ask clarifying questions** — one at a time, the ones that matter
-3. **Present short design in chat** — approach, files touched, testing
-4. **Get approval** — STOP and wait for an explicit yes; presenting the design and starting in the same breath is skipping the gate
-5. **Implement** — proceed with the normal development workflow (TDD applies); no plan document
+3. **Integration sweep** — see "Integration sweep" below; its findings go in the design
+4. **Present short design in chat** — approach, files touched, testing, sweep findings
+5. **Get approval** — STOP and wait for an explicit yes; presenting the design and starting in the same breath is skipping the gate
+6. **Implement** — proceed with the normal development workflow (TDD applies); no plan document
 
 **Architectural:**
 1. **Explore project context** — check files, docs, recent commits
 2. **Offer the visual companion just-in-time** — NOT upfront. The first time a question would genuinely be clearer shown than described, offer it then (its own message); on approval its browser tab opens for you. If no visual question ever arises, never offer it. See the Visual Companion section below.
 3. **Ask clarifying questions** — one at a time, understand purpose/constraints/success criteria
 4. **Propose 2-3 approaches** — with trade-offs and your recommendation
-5. **Present design** — in sections scaled to their complexity, get user approval after each section
+5. **Present design** — in sections scaled to their complexity; run the Integration sweep before each section that adds or changes state, contracts or rules, present its findings with the section, and get user approval after each section
 6. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
 7. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
 8. **User reviews written spec** — ask user to review the spec file before proceeding
@@ -164,8 +166,8 @@ reported recommendation.
 The subsections below serve the bounded and architectural paths (a
 spike stops at "present the probe, get a nod"). Sections from
 **Exploring approaches** onward are architectural-path depth — for
-bounded work, context plus a few questions plus a short in-chat design
-is the whole process.
+bounded work, context plus a few questions plus the Integration sweep
+plus a short in-chat design is the whole process.
 
 **Understanding the idea:**
 
@@ -207,6 +209,28 @@ is the whole process.
 - Where existing code has problems that affect the work (e.g., a file that's grown too large, unclear boundaries, tangled responsibilities), include targeted improvements as part of the design - the way a good developer improves code they're working in.
 - Don't propose unrelated refactoring. Stay focused on what serves the current goal.
 
+**Integration sweep (mandatory before presenting any section that touches existing state — Bounded and Architectural paths):**
+
+A design is checked against the system it lands in before your human partner sees it, not after.
+For each piece of state, contract or rule the section adds or changes:
+
+1. **Consumers by name.** Grep the symbols the change touches (the value, any signature or hash
+   derived from it, its writers) and list every reader and writer. State which version each one
+   reads after the change, and why, as a table rather than prose.
+2. **Consumers by meaning.** Grep docstrings and comments for the *purpose* the change affects
+   ("would lose work", "unsaved", "one step"), not only the symbol. A function whose stated reason
+   the new state makes false is a consumer that no symbol search finds.
+3. **Existing rulings first.** Read the project's governing specs for every area touched. Where an
+   existing rule already decides a case, the design follows it; a new special case states why the
+   existing rule fails.
+4. **Join existing lists.** Where the project enumerates a class (writers gated during X, actions
+   that are one undo step, the controls an acceptance row walks), the new thing joins that list
+   instead of getting a parallel rule. A parallel rule has no test row and drifts first.
+5. **Amendment list.** Every sentence of existing spec or docs that the design makes false is
+   listed with its replacement text, as part of the design.
+
+A section presented without its sweep is not ready for approval, however obvious it looks.
+
 ## After the Design (architectural path)
 
 **Documentation:**
@@ -223,6 +247,7 @@ After writing the spec document, look at it with fresh eyes:
 2. **Internal consistency:** Do any sections contradict each other? Does the architecture match the feature descriptions?
 3. **Scope check:** Is this focused enough for a single implementation plan, or does it need decomposition?
 4. **Ambiguity check:** Could any requirement be interpreted two different ways? If so, pick one and make it explicit.
+5. **Integration check:** Does every changed piece of state have its consumer table and amendment list from the Integration sweep? A consumer that greps up in the code but is missing from the table is a gap; fix it before asking for review.
 
 Fix any issues inline. No need to re-review — just fix and move on.
 
