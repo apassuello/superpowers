@@ -256,7 +256,7 @@ Every step must contain the actual content an engineer needs. These are **plan f
 
 After writing the complete plan, look at the spec with fresh eyes and check the plan against it. This is a checklist you run yourself — not a subagent dispatch.
 
-**1. Spec coverage, both directions:** Skim each section/requirement in the spec — can you point to a task that implements it? Then read your tasks — can you point to the spec section each behavioral criterion and normative case came from? Unsourced behavior means you authored spec inside the plan; take it through **Spec Amendment** instead.
+**1. Spec coverage, both directions:** Skim each section/requirement in the spec — can you point to a task that implements it? Then read your tasks — can you point to the spec section each behavioral criterion and normative case came from? Unsourced behavior means you authored spec inside the plan; take it through **Spec Amendment** instead. Then extend the same check beyond behavior: every non-behavioral addition — phases, process machinery, tooling, abstractions, docs — traces to the spec or to an owner instruction you can quote. Untraceable additions are removed or listed as offered.
 
 **2. Placeholder scan:** Search your plan for red flags — any of the patterns from the "No Placeholders" section above. Fix them.
 

@@ -106,7 +106,7 @@ your path and complete them in order.
 4. **Propose 2-3 approaches** — with trade-offs and your recommendation
 5. **Present design** — in sections scaled to their complexity; run the Integration sweep before each section that adds or changes state, contracts or rules, present its findings with the section, and get user approval after each section
 6. **Write design doc** — save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit
-7. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope (see below)
+7. **Spec self-review** — quick inline check for placeholders, contradictions, ambiguity, scope, necessity (see below)
 8. **User reviews written spec** — ask user to review the spec file before proceeding
 9. **Transition to implementation** — invoke writing-plans skill to create implementation plan
 
@@ -248,6 +248,7 @@ After writing the spec document, look at it with fresh eyes:
 3. **Scope check:** Is this focused enough for a single implementation plan, or does it need decomposition?
 4. **Ambiguity check:** Could any requirement be interpreted two different ways? If so, pick one and make it explicit.
 5. **Integration check:** Does every changed piece of state have its consumer table and amendment list from the Integration sweep? A consumer that greps up in the code but is missing from the table is a gap; fix it before asking for review.
+6. **Necessity:** Every requirement traces to the owner's request or to a stated observed problem — quote it. An untraceable requirement moves to an "Out of scope / offered" list, not kept.
 
 Fix any issues inline. No need to re-review — just fix and move on.
 

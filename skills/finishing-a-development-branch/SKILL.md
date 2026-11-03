@@ -7,7 +7,7 @@ description: Use when implementation is complete, all tests pass, and you need t
 
 ## Overview
 
-**Core principle:** Verify tests → Detect environment → Present options → Execute choice → Clean up.
+**Core principle:** Verify tests → Detect environment → Offer simplification → Present options → Execute choice → Clean up.
 
 **Announce at start:** "I'm using the finishing-a-development-branch skill to complete this work."
 
@@ -49,6 +49,10 @@ The base branch is whatever this work forked from — usually named in the
 plan, the conversation, or the branch's upstream. If it is not already
 known, ask: "This branch split from <your best guess> - is that correct?"
 Confirm before merging: merging into the wrong base is expensive to undo.
+
+## Step 3b: Offer a Simplification Pass
+
+If `workflow-utils:simpler` is available, ask: "Run a simplification pass on this branch (`simpler branch <base>`)? (y/n)". On yes, run it with the base from Step 3 and present the report; the owner rules on each item before Step 4's options. Not available → skip this step.
 
 ## Step 4: Present Options
 
