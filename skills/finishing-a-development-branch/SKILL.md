@@ -52,7 +52,7 @@ Confirm before merging: merging into the wrong base is expensive to undo.
 
 ## Step 3b: Offer a Simplification Pass
 
-If `workflow-utils:simpler` is available, ask: "Run a simplification pass on this branch (`simpler branch <base>`)? (y/n)". On yes, run it with the base from Step 3 and present the report; the owner rules on each item before Step 4's options. Not available → skip this step.
+If `workflow-utils:simpler` is available, ask: "Run a simplification pass on this branch (`simpler branch <base>`)? (y/n)". On yes, run it with the base from Step 3 and present the report; the owner rules on each item before Step 4's options. If any item is applied, return to Step 1. Not available → skip this step.
 
 ## Step 4: Present Options
 
